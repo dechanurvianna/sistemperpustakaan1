@@ -1,4 +1,4 @@
-@extends('layouts.backend.app')
+@extends('layouts.backend.anggota.app')
 
 @section('content')
 <div class="d-flex">
@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="d-flex justify-content-between mb-4">
             <input type="text" class="form-control w-25" placeholder="Search">
-            <div>👤 Bonie Green</div>
+            <div>👤 Anggota</div>
         </div>
 
         <!-- Cards -->

@@ -1,33 +1,51 @@
 <?php
 
-namespace App\Http\Controllers\Petugas;
+namespace App\Http\Controllers\Petugas; // namespace controller untuk petugas
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Anggota\Buku;
-use App\Models\Anggota\Peminjaman;
+use App\Http\Controllers\Controller; // controller utama Laravel
+use Illuminate\Support\Facades\Auth; // untuk mengambil data user login
+use Illuminate\Support\Facades\Schema; // untuk cek struktur tabel database
+use App\Models\User; // model User
+use App\Models\Petugas\Buku; // model Buku (petugas)
+use App\Models\Petugas\Peminjaman; // model Peminjaman (petugas)
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // 🔒 Cek login & role
-        if (!session('user_id') || session('role') != 'petugas') {
-            return redirect('/login');
+        // ================= CEK ROLE =================
+        // pastikan hanya user dengan role 'petugas' yang bisa akses
+        if (Auth::user()->role !== 'petugas') {
+            abort(403); // tampilkan error 403 (forbidden)
         }
 
-        // 📊 Total data
+        // ================= TOTAL ANGGOTA =================
+        // hitung jumlah user dengan role anggota
         $totalAnggota = User::where('role', 'anggota')->count();
-        $totalBuku = Buku::count();
-        $totalDenda = Peminjaman::sum('denda');
 
-        // 📚 Peminjaman terbaru + relasi (biar cepat)
-        $peminjaman = Peminjaman::with(['user', 'buku'])
-            ->latest()
-            ->take(5)
+        // ================= TOTAL BUKU =================
+        // hitung semua data buku
+        $totalBuku = Buku::count();
+
+        // ================= TOTAL DENDA =================
+        // cek apakah kolom 'denda' ada di tabel peminjaman
+        // jika ada → jumlahkan semua denda
+        // jika tidak → set 0 (biar tidak error)
+        $totalDenda = Schema::hasColumn('peminjaman', 'denda') 
+                        ? Peminjaman::sum('denda') 
+                        : 0;
+
+        // ================= DATA PEMINJAMAN TERBARU =================
+        // ambil 5 data peminjaman terbaru beserta relasi:
+        // user (anggota), buku, dan petugas
+        $peminjaman = Peminjaman::with(['user', 'buku', 'petugas'])
+            ->latest() // urut dari yang terbaru
+            ->take(5) // ambil 5 data saja
             ->get();
 
-        return view('petugas.dashboard', compact(
+        // ================= KIRIM KE VIEW =================
+        // kirim semua data ke dashboard petugas
+        return view('dashboard.petugas', compact(
             'totalAnggota',
             'totalBuku',
             'totalDenda',

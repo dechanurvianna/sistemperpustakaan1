@@ -1,25 +1,28 @@
 <?php
 
-namespace App\Http\Controllers\Anggota;
+namespace App\Http\Controllers\Anggota; // namespace untuk controller anggota
 
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller; // controller utama Laravel
+use Illuminate\Support\Facades\DB; // untuk query database langsung (query builder)
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        // ambil data peminjaman + gabungkan dengan tabel buku
         $peminjaman = DB::table('peminjaman')
-            ->join('buku', 'peminjaman.id_buku', '=', 'buku.id')
-            ->select('buku.judul_buku', 'buku.pengarang', 'peminjaman.*')
-            ->get();
+            ->leftJoin('buku', 'peminjaman.buku_id', '=', 'buku.id')
+            // ambil kolom dari buku + semua kolom peminjaman
+            ->select('buku.judul', 'buku.pengarang', 'peminjaman.*')
+            ->get(); // eksekusi query
 
-        $totalPinjam = DB::table('peminjaman')
-            ->where('status', 'dipinjam')
-            ->count();
+        // hitung total semua data peminjaman
+        $totalPinjam = DB::table('peminjaman')->count();
 
-        $totalDenda = DB::table('pengembalian')->sum('jumlah_denda');
+        // total denda (sementara belum dihitung, jadi 0)
+        $totalDenda = 0;
 
+        // kirim semua data ke view dashboard anggota
         return view('dashboard.anggota', compact(
             'peminjaman',
             'totalPinjam',

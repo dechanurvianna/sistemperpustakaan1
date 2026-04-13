@@ -1,4 +1,4 @@
-@extends('layouts.backend.app')
+@extends('layouts.backend.petugas.app')
 
 @section('content')
 
@@ -11,7 +11,7 @@
         <div class="d-flex align-items-center">
             <span class="me-3">🔔</span>
             <img src="https://i.pravatar.cc/40" class="rounded-circle me-2">
-            <span>Bonnie Green</span>
+            <span>{{ Auth::user()->name }}</span>
         </div>
     </div>
 
@@ -23,7 +23,7 @@
                     <div class="me-3 fs-3">👥</div>
                     <div>
                         <small>Total Anggota</small>
-                        <h5>85</h5>
+                        <h5>{{ $totalAnggota }}</h5>
                     </div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                     <div class="me-3 fs-3">📖</div>
                     <div>
                         <small>Total Buku</small>
-                        <h5>1.200</h5>
+                        <h5>{{ $totalBuku }}</h5>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                     <div class="me-3 fs-3">💲</div>
                     <div>
                         <small>Total Denda</small>
-                        <h5>Rp 35.000</h5>
+                        <h5>Rp {{ number_format($totalDenda, 0, ',', '.') }}</h5>
                     </div>
                 </div>
             </div>
@@ -72,19 +72,20 @@
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td>Laskar Langit</td>
-                        <td>Andre Hirata</td>
-                        <td>05-03-2025</td>
-                        <td><span class="badge bg-danger">Dipinjam</span></td>
-                    </tr>
-
-                    <tr>
-                        <td>Gadis Kretek</td>
-                        <td>Ratih Kumala</td>
-                        <td>15-02-2025</td>
-                        <td><span class="badge bg-primary">Dikembalikan</span></td>
-                    </tr>
+                    @foreach ($peminjaman as $pinjam)
+                        <tr>
+                            <td>{{ $pinjam->user->name }}</td>
+                            <td>{{ $pinjam->buku->judul }}</td>
+                            <td>{{ \Carbon\Carbon::parse($pinjam->tanggal_peminjaman)->format('d-m-Y') }}</td>
+                            <td>
+                                @if ($pinjam->status === 'dipinjam')
+                                    <span class="badge bg-danger">Dipinjam</span>
+                                @else
+                                    <span class="badge bg-primary">Dikembalikan</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

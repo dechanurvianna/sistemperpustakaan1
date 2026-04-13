@@ -13,6 +13,7 @@ class Buku extends Model
         'pengarang',
         'isbn',
         'gambar',
-        'status'
+        'status',
+        'stok'
     ];
 }

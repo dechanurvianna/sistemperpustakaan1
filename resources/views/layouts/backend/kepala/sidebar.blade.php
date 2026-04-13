@@ -38,30 +38,30 @@
     <ul class="nav flex-column">
 
         <li class="nav-item">
-            <a href="/dashboard-anggota"
-               class="nav-link {{ request()->is('dashboard-anggota') ? 'active' : '' }}">
+            <a href="{{ route('kepala.dashboard') }}"
+               class="nav-link {{ request()->is('kepala-dashboard') ? 'active' : '' }}">
                 🏠 Dashboard
             </a>
         </li>
 
         <li class="nav-item">
-            <a href="/cari-buku"
-               class="nav-link {{ request()->is('cari-buku') ? 'active' : '' }}">
-                🔍 Cari Buku
+            <a href="{{ route('kepala.laporan')}}"
+               class="nav-link {{ request()->is('kepala/laporan') ? 'active' : '' }}">
+                🔍 Laporan
             </a>
         </li>
 
         <li class="nav-item">
-            <a href="/peminjaman"
-               class="nav-link {{ request()->is('peminjaman') ? 'active' : '' }}">
-                📖 Peminjaman
+            <a href="{{ route('kepala.katalog')}}"
+               class="nav-link {{ request()->is('kepala/katalog') ? 'active' : '' }}">
+                🔍 Data Buku
             </a>
         </li>
 
         <li class="nav-item">
-            <a href="/pengembalian"
-               class="nav-link {{ request()->is('pengembalian') ? 'active' : '' }}">
-                📥 Pengembalian
+            <a href="{{ route('kepala.petugas.index') }}"
+               class="nav-link {{ request()->is('kepala/petugas') ? 'active' : '' }}">
+                📥 Tambah Petugas
             </a>
         </li>
 

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-
     public function showLogin()
     {
         return view('auth.login');
@@ -19,9 +19,9 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    // ================= REGISTER =================
     public function register(Request $request)
     {
-        // VALIDASI
         $request->validate([
             'name' => 'required',
             'username' => 'required|unique:users,username',
@@ -29,73 +29,59 @@ class AuthController extends Controller
             'password' => 'required|min:6'
         ]);
 
-        // INSERT USER
-        DB::table('users')->insert([
+        $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'anggota',
-            'created_at' => now(),
-            'updated_at' => now()
         ]);
 
-        // AMBIL DATA USER
-        $user = DB::table('users')
-            ->where('username', $request->username)
-            ->first();
+        Auth::login($user);
+        $request->session()->regenerate();
 
-        // SIMPAN SESSION
-        session([
-            'user_id' => $user->id,
-            'username' => $user->username,
-            'role' => $user->role
-        ]);
-
-        return redirect('/dashboard-anggota');
+        return redirect()->route('anggota.dashboard');
     }
 
+    // ================= LOGIN =================
     public function login(Request $request)
-    {
-        // VALIDASI
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required'
-        ]);
+{
+    $request->validate([
+        'username' => 'required',
+        'password' => 'required'
+    ]);
 
-        // CARI USER
-        $user = DB::table('users')
-            ->where('username', $request->username)
-            ->first();
+    $user = User::where('username', $request->username)->first();
 
-        // CEK PASSWORD
-        if ($user && Hash::check($request->password, $user->password)) {
+    if ($user && Hash::check($request->password, $user->password)) {
 
-            // SIMPAN SESSION
-            session([
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'role' => $user->role
-            ]);
+        Auth::login($user);
+        // $request->session()->regenerate();
 
-            // REDIRECT SESUAI ROLE
-            if ($user->role == 'petugas') {
-                return redirect('/dashboard-petugas');
-            } elseif ($user->role == 'anggota') {
-                return redirect('/dashboard-anggota');
-            } elseif ($user->role == 'kepala') {
-                return redirect('/dashboard-kepala');
-            } else {
-                return redirect('/login');
-            }
+        // ❌ HAPUS dd() YANG INI
+        // dd(Auth::check(), Auth::user());
+
+        // ✅ Redirect sesuai role
+        if ($user->role === 'petugas') {
+            return redirect()->route('petugas.dashboard');
+        } elseif ($user->role === 'kepala') {
+            return redirect()->route('kepala.dashboard');
         }
 
-        return back()->with('error', 'Username atau Password salah');
+        return redirect()->route('anggota.dashboard');
     }
 
+    return back()->with('error', 'Username atau Password salah');
+}
+
+    // ================= LOGOUT =================
     public function logout(Request $request)
     {
-        $request->session()->flush();
-        return redirect('/login');
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

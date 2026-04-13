@@ -58,7 +58,7 @@
 <div class="d-flex">
 
     <!-- SIDEBAR -->
-    @include('layouts.backend.sidebar')
+    @include('layouts.backend.petugas.sidebar')
 
     <!-- CONTENT -->
     <div class="flex-grow-1 content">

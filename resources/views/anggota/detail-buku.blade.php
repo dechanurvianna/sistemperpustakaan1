@@ -1,4 +1,4 @@
-@extends('layouts.backend.app')
+@extends('layouts.backend.anggota.app')
 
 @section('content')
 
@@ -10,66 +10,72 @@
 }
 
 .detail-card {
-    width: 600px; /* 🔥 biar nggak kepanjangan */
+    width: 650px;
     border-radius: 20px;
     background: #fff;
-    padding: 25px;
+    padding: 30px;
 }
 
 .book-img {
     width: 150px;
     height: 220px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
-.badge-status {
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 12px;
-}
-
-.btn-kembali {
-    border-radius: 20px;
-    font-size: 12px;
-    padding: 5px 15px;
+.detail-card strong {
+    color: #333;
+    min-width: 120px;
+    display: inline-block;
 }
 </style>
 
-<div class="detail-wrapper">
+<div class="d-flex justify-content-center mt-5">
 
     <div class="detail-card shadow-sm">
 
-        <div class="d-flex align-items-center">
+        <div class="d-flex gap-4 align-items-start">
 
             <!-- GAMBAR -->
-            <img src="{{ $buku->gambar ?? 'https://via.placeholder.com/150x220' }}" class="book-img me-4">
+            <img src="{{ asset('storage/' . $buku->gambar) }}" class="book-img">
 
             <!-- DETAIL -->
-            <div>
+            <div class="flex-grow-1">
 
-                <h5 class="fw-bold">{{ $buku->judul }}</h5>
+                <h5 class="fw-bold mb-3">{{ $buku->judul }}</h5>
 
-                <p class="mb-1"><strong>Pengarang :</strong> {{ $buku->pengarang }}</p>
-                <p class="mb-1"><strong>Kategori :</strong> {{ $buku->kategori ?? 'Novel' }}</p>
-                <p class="mb-1"><strong>Tahun Terbit :</strong> {{ $buku->tahun_terbit ?? '-' }}</p>
+                <div class="mb-2"><strong>Pengarang :</strong> {{ $buku->pengarang }}</div>
+                <div class="mb-2"><strong>Penerbit :</strong> {{ $buku->penerbit ?? '-' }}</div>
+                <div class="mb-2"><strong>Kategori :</strong> {{ $buku->kategori->nama_kategori ?? '-' }}</div>
+                <div class="mb-2"><strong>Tahun Terbit :</strong> {{ $buku->tahun_terbit ?? '-' }}</div>
 
-                <p class="mb-2">
-                    <strong>Tersedia :</strong>
+                <div class="mb-2">
+                    <strong>Stok :</strong>
+                    @if($buku->stok > 0)
+                        <span class="badge bg-success">{{ $buku->stok }}</span>
+                    @else
+                        <span class="badge bg-danger">Habis</span>
+                    @endif
+                </div>
+
+                <div class="mb-3">
+                    <strong>Status :</strong>
                     @if($buku->status == 'tersedia')
                         <span class="badge bg-success badge-status">✔ Tersedia</span>
                     @else
                         <span class="badge bg-danger badge-status">Dipinjam</span>
                     @endif
-                </p>
+                </div>
 
-                <p style="font-size: 14px;">
-                    <strong>Sinopsis :</strong><br>
-                    {{ $buku->deskripsi ?? 'Tidak ada sinopsis' }}
-                </p>
+                <div class="mb-3">
+                    <strong>Deskripsi :</strong>
+                    <p class="mt-1 text-muted" style="font-size: 14px; line-height: 1.5;">
+                        {{ $buku->deskripsi ?? '-' }}
+                    </p>
+                </div>
 
-                <div class="text-end mt-3">
-                    <a href="{{ route('cari.buku') }}" class="btn btn-secondary btn-kembali">
+                <div class="text-end">
+                    <a href="{{ route('anggota.cari-buku') }}" class="btn btn-secondary btn-kembali">
                         Kembali
                     </a>
                 </div>

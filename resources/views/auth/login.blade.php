@@ -78,14 +78,19 @@ button:hover{
 <h2>Sistem Perpustakaan</h2>
 <p>Masuk untuk melanjutkan</p>
 
-<form method="POST" action="/login">
-@csrf
+<form method="POST" action="{{ route('login') }}">
+    @csrf
 
-<input type="text" name="username" placeholder="Username">
-<input type="password" name="password" placeholder="Password">
+    @if (session('error'))
+        <div style="color: red; margin-bottom: 10px;">
+            {{ session('error') }}
+        </div>
+    @endif
 
-<button type="submit">Login</button>
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
 
+    <button type="submit">Login</button>
 </form>
 
 <div class="row">

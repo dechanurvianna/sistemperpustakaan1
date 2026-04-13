@@ -3,18 +3,29 @@
 namespace App\Models\Anggota;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Anggota\Buku; // ✅ tambahkan ini
 
 class Peminjaman extends Model
 {
-     protected $table = 'peminjaman';
+    protected $table = 'peminjaman';
 
     protected $fillable = [
-        'nama',
-        'judul_buku',
-        'tanggal_peminjaman',
-        'jatuh_tempo',
-        'tanggal_pengembalian',
+        'user_id',
+        'buku_id',
+        'tanggal_pinjam',
+        'tanggal_kembali',
         'status',
-        'aksi',
     ];
+
+    // Relasi ke buku
+    public function buku()
+    {
+        return $this->belongsTo(Buku::class, 'buku_id');
+    }
+
+    // Relasi ke user (anggota)
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
+    }
 }
